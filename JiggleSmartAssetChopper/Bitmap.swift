@@ -133,14 +133,6 @@ class Bitmap {
             }
         }
         
-        print("width = \(width)")
-        print("height = \(height)")
-        
-        print("minx = \(minX)")
-        print("miny = \(minY)")
-        print("maxx = \(maxX)")
-        print("maxy = \(maxY)")
-        
         return BitmapFrame(x: minX,
                            y: minY,
                            width: maxX - minX + 1,

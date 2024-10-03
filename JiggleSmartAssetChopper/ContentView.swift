@@ -22,7 +22,6 @@ struct ContentView: View {
             names.append(.init(partial: "shrunk_guide_points", replace: "guide_points", type: .checkbox))
             names.append(.init(partial: "shrunk_guides", replace: "guides", type: .checkbox))
             names.append(.init(partial: "shrunk_jiggle_points", replace: "jiggle_points", type: .checkbox))
-            names.append(.init(partial: "shrunk_delete", replace: "delete", type: .checkbox))
             names.append(.init(partial: "shrunk_jiggles", replace: "jiggles", type: .checkbox))
             
             Tool.generateAll(names: names)
