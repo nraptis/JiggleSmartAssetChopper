@@ -53,15 +53,18 @@ class Bitmap {
             bitmapData.deallocate()
         }
         
-        let context = CGContext(data: bitmapData, 
+        if let context = CGContext(data: bitmapData,
                                 width: width,
                                 height: height,
                                 bitsPerComponent: bitsPerComponent,
                                 bytesPerRow: bytesPerRow,
                                 space: colorSpace,
-                                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
-        
-        context?.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+                                   bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) {
+            
+            context.clear(CGRect(x: 0, y: 0, width: width, height: height))
+            context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+            
+        }
         var _rgba: [[RGBA]] = Array(repeating: Array(repeating: RGBA(r: 0, g: 0, b: 0, a: 0), count: height), count: width)
         for y in 0..<height {
             for x in 0..<width {
@@ -102,5 +105,45 @@ class Bitmap {
             print(string)
         }
         print("@@ End ==> Bitmap [\(width) x \(height)]")
+    }
+    
+    struct BitmapFrame {
+        let x: Int
+        let y: Int
+        let width: Int
+        let height: Int
+    }
+    func findEdges(threshold: Int = 16) -> BitmapFrame {
+        
+        var minX = width
+        var maxX = 0
+        var minY = height
+        var maxY = 0
+        
+        for i in 0..<width {
+            for n in 0..<height {
+                if rgba[i][n].a > threshold {
+                    if i < minX { minX = i }
+                    if i > maxX { maxX = i }
+                    
+                    if n < minY { minY = n }
+                    if n > maxY { maxY = n }
+                    
+                }
+            }
+        }
+        
+        print("width = \(width)")
+        print("height = \(height)")
+        
+        print("minx = \(minX)")
+        print("miny = \(minY)")
+        print("maxx = \(maxX)")
+        print("maxy = \(maxY)")
+        
+        return BitmapFrame(x: minX,
+                           y: minY,
+                           width: maxX - minX + 1,
+                           height: maxY - minY + 1)
     }
 }

@@ -145,6 +145,23 @@ final class FileUtils {
         }
         return false
     }
+    
+    func saveImagePNG(cgImage: CGImage?, filePath: String?) -> Bool {
+        if let filePath = filePath {
+            if let cgImage = cgImage {
+                let fileURL = URL(fileURLWithPath: filePath)
+                if let destination = CGImageDestinationCreateWithURL(fileURL as CFURL, kUTTypePNG, 1, nil) {
+                    CGImageDestinationAddImage(destination, cgImage, nil)
+                    CGImageDestinationFinalize(destination)
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+        return false
+    }
+    
 #else
     func saveImagePNG(image: UIImage?, filePath: String?) -> Bool {
         if image != nil {
