@@ -72,21 +72,21 @@ enum SizeCategory: CaseIterable {
             case .pad_0l:
                 return 252
             case .pad_1l:
-                return 198
+                return 198 + 12
             case .pad_2l:
-                return 120
+                return 120 + 6
             case .phone_po_0l:
                 return 192
             case .phone_po_1l:
-                return 168
+                return 168 + 6
             case .phone_po_2l:
-                return 108
+                return 108 + 6
             case .phone_ls_0l:
                 return 162
             case .phone_ls_1l:
-                return 132
+                return 132 + 6
             case .phone_ls_2l:
-                return 84
+                return 84 + 6
             }
         }
     }
