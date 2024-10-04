@@ -14,15 +14,30 @@ struct Tool {
         for name in names {
             
             let importNameLight = name.partial + "_light.png"
+            let importNameLightDisabled = name.partial + "_light_disabled.png"
+            
             let importNameDark = name.partial + "_dark.png"
+            let importNameDarkDisabled = name.partial + "_dark_disabled.png"
+            
             
             let filePathLight = FileUtils.shared.getMainBundleFilePath(fileName: importNameLight)
+            let filePathLightDisabled = FileUtils.shared.getMainBundleFilePath(fileName: importNameLightDisabled)
+            
             let filePathDark = FileUtils.shared.getMainBundleFilePath(fileName: importNameDark)
+            let filePathDarkDisabled = FileUtils.shared.getMainBundleFilePath(fileName: importNameDarkDisabled)
+            
             
             guard let imageLight = FileUtils.shared.loadImage(filePathLight)?.cgImage(forProposedRect: nil,
                                                                                       context: nil,
                                                                                       hints: nil) else {
                 print("Image not found: \(filePathLight)")
+                return
+            }
+            
+            guard let imageLightDisabled = FileUtils.shared.loadImage(filePathLightDisabled)?.cgImage(forProposedRect: nil,
+                                                                                                      context: nil,
+                                                                                                      hints: nil) else {
+                print("Image not found: \(filePathLightDisabled)")
                 return
             }
             
@@ -33,36 +48,53 @@ struct Tool {
                 return
             }
             
+            guard let imageDarkDisabled = FileUtils.shared.loadImage(filePathDarkDisabled)?.cgImage(forProposedRect: nil,
+                                                                                                    context: nil,
+                                                                                                    hints: nil) else {
+                print("Image not found: \(filePathDarkDisabled)")
+                return
+            }
+            
             let bitmapLight = Bitmap(cgImage: imageLight)
-            let bitmapDark = Bitmap(cgImage: imageDark)
             
             let frameLight = bitmapLight.findEdges()
-            let frameDark = bitmapDark.findEdges()
             
             if frameLight.width <= 6 || frameLight.height <= 6 {
                 print("Invalid Dimension (Light)")
                 return
             }
             
-            if frameDark.width <= 6 || frameDark.height <= 6 {
-                print("Invalid Dimension (Dark)")
-                return
-            }
-            
             if let croppedLight = crop(cgImage: imageLight, frame: frameLight, padding: 1) {
                 
-                export(image: croppedLight, name: name.replace, isDark: false, type: name.type)
+                export(image: croppedLight, name: name.replace, isDark: false, isDisabled: false, type: name.type)
             } else {
                 print("Invalid Crop (Light)")
                 return
             }
             
+            if let croppedLightDisabled = crop(cgImage: imageLightDisabled, frame: frameLight, padding: 1) {
+                
+                export(image: croppedLightDisabled, name: name.replace, isDark: false, isDisabled: true, type: name.type)
+            } else {
+                print("Invalid Crop (Light Disabled)")
+                return
+            }
+            
             if let croppedDark = crop(cgImage: imageDark, frame: frameLight, padding: 1) {
                 
-                export(image: croppedDark, name: name.replace, isDark: true, type: name.type)
+                export(image: croppedDark, name: name.replace, isDark: true, isDisabled: false, type: name.type)
                 
             } else {
                 print("Invalid Crop (Dark)")
+                return
+            }
+            
+            if let croppedDarkDisabled = crop(cgImage: imageDarkDisabled, frame: frameLight, padding: 1) {
+                
+                export(image: croppedDarkDisabled, name: name.replace, isDark: true, isDisabled: true, type: name.type)
+                
+            } else {
+                print("Invalid Crop (Dark Disabled)")
                 return
             }
         }
@@ -104,22 +136,25 @@ struct Tool {
         return nil
     }
     
-    static func export(image: CGImage, name: String, isDark: Bool, type: ImportType) {
+    static func export(image: CGImage, name: String, isDark: Bool, isDisabled: Bool, type: ImportType) {
     
         for sizeCategory in SizeCategory.allCases {
             var fileName = ""
-            switch type {
-            case .button:
-                fileName = "sexy_button"
-            case .checkbox:
-                fileName = "sexy_check"
-            }
             
-            fileName += "_" + name + "_" + sizeCategory.getPosfix()
+            fileName += name + "_" + sizeCategory.getPosfix()
             if isDark {
-                fileName += "_dark.png"
+                if isDisabled {
+                    fileName += "_dark_disabled.png"
+                } else {
+                    fileName += "_dark.png"
+                }
+                
             } else {
-                fileName += "_light.png"
+                if isDisabled {
+                    fileName += "_light_disabled.png"
+                } else {
+                    fileName += "_light.png"
+                }
             }
             
             let height = sizeCategory.getHeight(type: type)

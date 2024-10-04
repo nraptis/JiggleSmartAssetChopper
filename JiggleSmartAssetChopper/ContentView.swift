@@ -18,11 +18,16 @@ struct ContentView: View {
         .onAppear {
             
             var names = [ImportName]()
-            names.append(.init(partial: "shrunk_delete", replace: "delete", type: .button))
-            names.append(.init(partial: "shrunk_guide_points", replace: "guide_points", type: .checkbox))
-            names.append(.init(partial: "shrunk_guides", replace: "guides", type: .checkbox))
-            names.append(.init(partial: "shrunk_jiggle_points", replace: "jiggle_points", type: .checkbox))
-            names.append(.init(partial: "shrunk_jiggles", replace: "jiggles", type: .checkbox))
+            
+            
+            names.append(.init(partial: "mini_framed_menu_a", replace: "framed_menu_a", type: .framed))
+            names.append(.init(partial: "mini_framed_menu_b", replace: "framed_menu_b", type: .framed))
+            names.append(.init(partial: "mini_framed_menu_c", replace: "framed_menu_c", type: .framed))
+            
+            names.append(.init(partial: "mini_loose_menu_a", replace: "loose_menu_a", type: .loose))
+            names.append(.init(partial: "mini_loose_menu_b", replace: "loose_menu_b", type: .loose))
+            names.append(.init(partial: "mini_loose_menu_c", replace: "loose_menu_c", type: .loose))
+            
             
             Tool.generateAll(names: names)
         }

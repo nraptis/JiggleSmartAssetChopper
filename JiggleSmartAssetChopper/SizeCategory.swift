@@ -46,12 +46,12 @@ enum SizeCategory: CaseIterable {
     
     func getHeight(type: ImportType) -> Int {
         switch type {
-        case .button:
+        case .loose:
             switch self {
             case .pad_0l:
                 return 252
             case .pad_1l:
-                return 246
+                return 246 - 12
             case .pad_2l:
                 return 162
             case .phone_po_0l:
@@ -67,7 +67,7 @@ enum SizeCategory: CaseIterable {
             case .phone_ls_2l:
                 return 102
             }
-        case .checkbox:
+        case .framed:
             switch self {
             case .pad_0l:
                 return 252

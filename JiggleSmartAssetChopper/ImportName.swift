@@ -8,8 +8,8 @@
 import Foundation
 
 enum ImportType {
-    case button
-    case checkbox
+    case loose
+    case framed
 }
 
 struct ImportName {
