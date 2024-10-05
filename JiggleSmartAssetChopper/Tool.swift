@@ -9,7 +9,10 @@ import Cocoa
 
 struct Tool {
     
-    static func generateAll(names: [ImportName]) {
+    static func generateAll(names: [ImportName], scaled: Bool) {
+        
+        let scaleNames = ["1_0", "2_0", "3_0"]
+        let scaleDivisions = [6, 3, 2]
         
         for name in names {
             
@@ -66,7 +69,21 @@ struct Tool {
             
             if let croppedLight = crop(cgImage: imageLight, frame: frameLight, padding: 1) {
                 
-                export(image: croppedLight, name: name.replace, isDark: false, isDisabled: false, type: name.type)
+                if scaled {
+                    exportScaled(image: croppedLight,
+                                 name: name.replace,
+                                 isDark: false,
+                                 isDisabled: false,
+                                 type: name.type,
+                                 scaleNames: scaleNames,
+                                 scaleDivisions: scaleDivisions)
+                } else {
+                    export(image: croppedLight,
+                           name: name.replace,
+                           isDark: false,
+                           isDisabled: false,
+                           type: name.type)
+                }
             } else {
                 print("Invalid Crop (Light)")
                 return
@@ -74,15 +91,42 @@ struct Tool {
             
             if let croppedLightDisabled = crop(cgImage: imageLightDisabled, frame: frameLight, padding: 1) {
                 
-                export(image: croppedLightDisabled, name: name.replace, isDark: false, isDisabled: true, type: name.type)
+                if scaled {
+                    exportScaled(image: croppedLightDisabled,
+                                 name: name.replace,
+                                 isDark: false,
+                                 isDisabled: true,
+                                 type: name.type,
+                                 scaleNames: scaleNames,
+                                 scaleDivisions: scaleDivisions)
+                } else {
+                    export(image: croppedLightDisabled,
+                           name: name.replace,
+                           isDark: false,
+                           isDisabled: true,
+                           type: name.type)
+                }
             } else {
                 print("Invalid Crop (Light Disabled)")
                 return
             }
             
             if let croppedDark = crop(cgImage: imageDark, frame: frameLight, padding: 1) {
-                
-                export(image: croppedDark, name: name.replace, isDark: true, isDisabled: false, type: name.type)
+                if scaled {
+                    exportScaled(image: croppedDark,
+                                 name: name.replace,
+                                 isDark: true,
+                                 isDisabled: false,
+                                 type: name.type,
+                                 scaleNames: scaleNames,
+                                 scaleDivisions: scaleDivisions)
+                } else {
+                    export(image: croppedDark,
+                           name: name.replace,
+                           isDark: true,
+                           isDisabled: false,
+                           type: name.type)
+                }
                 
             } else {
                 print("Invalid Crop (Dark)")
@@ -90,8 +134,21 @@ struct Tool {
             }
             
             if let croppedDarkDisabled = crop(cgImage: imageDarkDisabled, frame: frameLight, padding: 1) {
-                
-                export(image: croppedDarkDisabled, name: name.replace, isDark: true, isDisabled: true, type: name.type)
+                if scaled {
+                    exportScaled(image: croppedDarkDisabled,
+                                 name: name.replace,
+                                 isDark: true,
+                                 isDisabled: true,
+                                 type: name.type,
+                                 scaleNames: scaleNames,
+                                 scaleDivisions: scaleDivisions)
+                } else {
+                    export(image: croppedDarkDisabled,
+                           name: name.replace,
+                           isDark: true,
+                           isDisabled: true,
+                           type: name.type)
+                }
                 
             } else {
                 print("Invalid Crop (Dark Disabled)")
@@ -99,7 +156,6 @@ struct Tool {
             }
         }
     }
-    
     
     static func crop(cgImage: CGImage,
                      frame: Bitmap.BitmapFrame,
@@ -136,8 +192,188 @@ struct Tool {
         return nil
     }
     
+    
+    static func makeImages(image: CGImage, name: String, isDark: Bool, isDisabled: Bool, type: ImportType) -> [(CGImage, String)] {
+        
+        var result = [(CGImage, String)]()
+        for sizeCategory in SizeCategory.allCases {
+            var fileName = ""
+            
+            fileName += name + "_" + sizeCategory.getPosfix()
+            if isDark {
+                if isDisabled {
+                    fileName += "_dark_disabled"
+                } else {
+                    fileName += "_dark"
+                }
+                
+            } else {
+                if isDisabled {
+                    fileName += "_light_disabled"
+                } else {
+                    fileName += "_light"
+                }
+            }
+            
+            let height = sizeCategory.getHeight(type: type)
+            
+            guard image.width > 4 && image.height > 4 else {
+                print("[Make Images] Invalid Image Size: \(fileName)")
+                continue
+            }
+            
+            guard height > 4 else {
+                print("[Make Images] Invalid Height: \(height)")
+                continue
+            }
+            
+            let percent = Double(height) / Double(image.height)
+            
+            var exportWidth = Int(Double(image.width) * percent + 0.5)
+            let exportHeight = height - 2
+            
+            guard exportWidth > 4 && exportHeight > 4 else {
+                print("[Make Images] Invalid Export Size: \(fileName), \(exportWidth) x \(exportHeight)")
+                continue
+            }
+            
+            var boxWidth = exportWidth + 2
+            while true {
+                if ((boxWidth % 6) == 0) { break }
+                boxWidth += 1
+            }
+            let boxHeight = exportHeight + 2
+            
+            let shiftX = (boxWidth - exportWidth) / 2
+            
+            let colorSpace = CGColorSpaceCreateDeviceRGB()
+            let bytesPerPixel = 4
+            let bytesPerRow = bytesPerPixel * boxWidth
+            let bitsPerComponent = 8
+            let bitmapData = UnsafeMutablePointer<UInt8>.allocate(capacity: boxWidth * boxHeight * bytesPerPixel)
+            defer {
+                bitmapData.deallocate()
+            }
+            
+            if let context = CGContext(data: bitmapData,
+                                    width: boxWidth,
+                                    height: boxHeight,
+                                    bitsPerComponent: bitsPerComponent,
+                                    bytesPerRow: bytesPerRow,
+                                    space: colorSpace,
+                                       bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) {
+                context.clear(CGRect(x: 0, y: 0, width: boxWidth, height: boxHeight))
+                context.draw(image, in: CGRect(x: shiftX,
+                                               y: 1,
+                                               width: exportWidth,
+                                               height: exportHeight))
+                
+                if let resultImage = context.makeImage() {
+                    result.append((resultImage, fileName))
+                } else {
+                    print("[Make Images] Graphics Error! \(fileName)")
+                }
+            }
+        }
+        return result
+    }
+    
+    static func exportScaled(image: CGImage,
+                             name: String,
+                             isDark: Bool,
+                             isDisabled: Bool,
+                             type: ImportType,
+                             scaleNames: [String],
+                             scaleDivisions: [Int]) {
+        
+        
+        let makeResult = makeImages(image: image, name: name, isDark: isDark, isDisabled: isDisabled, type: type)
+        
+        
+        for pair in makeResult {
+            
+            let imageOriginal = pair.0
+            let nameOriginal = pair.1
+            
+            for scaleIndex in 0..<scaleNames.count {
+                let scaleName = scaleNames[scaleIndex]
+                let scaleDivision = scaleDivisions[scaleIndex]
+                let fileName = nameOriginal + "_\(scaleName).png"
+                if scaleDivision > 0 {
+                    
+                    let resizeWidth = imageOriginal.width / scaleDivision
+                    let resizeHeight = imageOriginal.height / scaleDivision
+                    
+                    let colorSpace = CGColorSpaceCreateDeviceRGB()
+                    let bytesPerPixel = 4
+                    let bytesPerRow = bytesPerPixel * resizeWidth
+                    let bitsPerComponent = 8
+                    let bitmapData = UnsafeMutablePointer<UInt8>.allocate(capacity: resizeWidth * resizeHeight * bytesPerPixel)
+                    defer {
+                        bitmapData.deallocate()
+                    }
+                    
+                    if let context = CGContext(data: bitmapData,
+                                            width: resizeWidth,
+                                            height: resizeHeight,
+                                            bitsPerComponent: bitsPerComponent,
+                                            bytesPerRow: bytesPerRow,
+                                            space: colorSpace,
+                                               bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) {
+                        context.clear(CGRect(x: 0, y: 0, width: resizeWidth, height: resizeHeight))
+                        context.draw(image, in: CGRect(x: 0,
+                                                       y: 0,
+                                                       width: resizeWidth,
+                                                       height: resizeHeight))
+                        
+                        if let resultImage = context.makeImage() {
+                            
+                            
+                            let filePath = FileUtils.shared.getDocumentPath(fileName: fileName)
+                            if FileUtils.shared.saveImagePNG(cgImage: resultImage, filePath: filePath) {
+                                print("Success (Scaled)! \(fileName)")
+                            } else {
+                                print("[Export Scaled] Fail Save PNG! \(fileName)")
+                            }
+                            
+                        } else {
+                            print("[Export Scaled] Graphics Error! \(fileName)")
+                        }
+                    }
+                    
+                    
+                    
+                }
+                
+                
+                
+            }
+            
+            
+            
+        }
+    }
+    
     static func export(image: CGImage, name: String, isDark: Bool, isDisabled: Bool, type: ImportType) {
     
+        
+        let makeResult = makeImages(image: image, name: name, isDark: isDark, isDisabled: isDisabled, type: type)
+        
+        
+        for pair in makeResult {
+            let fileName = pair.1 + ".png"
+            let image = pair.0
+
+            let filePath = FileUtils.shared.getDocumentPath(fileName: fileName)
+            if FileUtils.shared.saveImagePNG(cgImage: image, filePath: filePath) {
+                print("[Export] Success! \(fileName)")
+            } else {
+                print("[Export] Fail Save PNG! \(fileName)")
+            }
+            
+        }
+        
+        /*
         for sizeCategory in SizeCategory.allCases {
             var fileName = ""
             
@@ -210,10 +446,10 @@ struct Tool {
                                                width: exportWidth,
                                                height: exportHeight))
                 
-                if let coppptt = context.makeImage() {
+                if let resultImage = context.makeImage() {
                     
                     let filePath = FileUtils.shared.getDocumentPath(fileName: fileName)
-                    if FileUtils.shared.saveImagePNG(cgImage: coppptt, filePath: filePath) {
+                    if FileUtils.shared.saveImagePNG(cgImage: resultImage, filePath: filePath) {
                         print("Success! \(fileName) @ box:[\(boxWidth) x \(boxHeight)] img:[\(exportWidth) x \(exportHeight)] from[\(image.width) x \(image.height)]")
                     } else {
                         print("Fail (B)! \(fileName)")
@@ -224,5 +460,6 @@ struct Tool {
                 }
             }
         }
+        */
     }
 }

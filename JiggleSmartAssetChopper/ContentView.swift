@@ -19,7 +19,6 @@ struct ContentView: View {
             
             var names = [ImportName]()
             
-            
             names.append(.init(partial: "mini_framed_menu_a", replace: "framed_menu_a", type: .framed))
             names.append(.init(partial: "mini_framed_menu_b", replace: "framed_menu_b", type: .framed))
             names.append(.init(partial: "mini_framed_menu_c", replace: "framed_menu_c", type: .framed))
@@ -29,7 +28,7 @@ struct ContentView: View {
             names.append(.init(partial: "mini_loose_menu_c", replace: "loose_menu_c", type: .loose))
             
             
-            Tool.generateAll(names: names)
+            Tool.generateAll(names: names, scaled: true)
         }
     }
 }
