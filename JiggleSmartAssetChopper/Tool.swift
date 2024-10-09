@@ -9,6 +9,167 @@ import Cocoa
 
 struct Tool {
     
+    static func getFrame(name: ImportName) -> Bitmap.BitmapFrame? {
+        
+        let importNameLight = name.partial + "_light.png"
+        
+        let filePathLight = FileUtils.shared.getMainBundleFilePath(fileName: importNameLight)
+        
+        guard let imageLight = FileUtils.shared.loadImage(filePathLight)?.cgImage(forProposedRect: nil,
+                                                                                  context: nil,
+                                                                                  hints: nil) else {
+            print("Image not found: \(filePathLight)")
+            return nil
+        }
+        
+        let bitmapLight = Bitmap(cgImage: imageLight)
+        
+        let frame = bitmapLight.findEdges()
+        
+        if frame.width <= 6 || frame.height <= 6 {
+            print("Invalid Dimension (Light)")
+            return nil
+        }
+        
+        return frame
+    }
+    
+    static func generateAll(name: ImportName, scaled: Bool, frame: Bitmap.BitmapFrame) {
+        
+        let scaleNames = ["1_0", "2_0", "3_0"]
+        let scaleDivisions = [6, 3, 2]
+        
+        let importNameLight = name.partial + "_light.png"
+        let importNameLightDisabled = name.partial + "_light_disabled.png"
+        
+        let importNameDark = name.partial + "_dark.png"
+        let importNameDarkDisabled = name.partial + "_dark_disabled.png"
+        
+        
+        let filePathLight = FileUtils.shared.getMainBundleFilePath(fileName: importNameLight)
+        let filePathLightDisabled = FileUtils.shared.getMainBundleFilePath(fileName: importNameLightDisabled)
+        
+        let filePathDark = FileUtils.shared.getMainBundleFilePath(fileName: importNameDark)
+        let filePathDarkDisabled = FileUtils.shared.getMainBundleFilePath(fileName: importNameDarkDisabled)
+        
+        
+        guard let imageLight = FileUtils.shared.loadImage(filePathLight)?.cgImage(forProposedRect: nil,
+                                                                                  context: nil,
+                                                                                  hints: nil) else {
+            print("Image not found: \(filePathLight)")
+            return
+        }
+        
+        guard let imageLightDisabled = FileUtils.shared.loadImage(filePathLightDisabled)?.cgImage(forProposedRect: nil,
+                                                                                                  context: nil,
+                                                                                                  hints: nil) else {
+            print("Image not found: \(filePathLightDisabled)")
+            return
+        }
+        
+        guard let imageDark = FileUtils.shared.loadImage(filePathDark)?.cgImage(forProposedRect: nil,
+                                                                                context: nil,
+                                                                                hints: nil) else {
+            print("Image not found: \(filePathDark)")
+            return
+        }
+        
+        guard let imageDarkDisabled = FileUtils.shared.loadImage(filePathDarkDisabled)?.cgImage(forProposedRect: nil,
+                                                                                                context: nil,
+                                                                                                hints: nil) else {
+            print("Image not found: \(filePathDarkDisabled)")
+            return
+        }
+        
+        if let croppedLight = crop(cgImage: imageLight, frame: frame, padding: 1) {
+            
+            if scaled {
+                exportScaled(image: croppedLight,
+                             name: name.replace,
+                             isDark: false,
+                             isDisabled: false,
+                             type: name.type,
+                             scaleNames: scaleNames,
+                             scaleDivisions: scaleDivisions)
+            } else {
+                export(image: croppedLight,
+                       name: name.replace,
+                       isDark: false,
+                       isDisabled: false,
+                       type: name.type)
+            }
+        } else {
+            print("Invalid Crop (Light)")
+            return
+        }
+        
+        if let croppedLightDisabled = crop(cgImage: imageLightDisabled, frame: frame, padding: 1) {
+            
+            if scaled {
+                exportScaled(image: croppedLightDisabled,
+                             name: name.replace,
+                             isDark: false,
+                             isDisabled: true,
+                             type: name.type,
+                             scaleNames: scaleNames,
+                             scaleDivisions: scaleDivisions)
+            } else {
+                export(image: croppedLightDisabled,
+                       name: name.replace,
+                       isDark: false,
+                       isDisabled: true,
+                       type: name.type)
+            }
+        } else {
+            print("Invalid Crop (Light Disabled)")
+            return
+        }
+        
+        if let croppedDark = crop(cgImage: imageDark, frame: frame, padding: 1) {
+            if scaled {
+                exportScaled(image: croppedDark,
+                             name: name.replace,
+                             isDark: true,
+                             isDisabled: false,
+                             type: name.type,
+                             scaleNames: scaleNames,
+                             scaleDivisions: scaleDivisions)
+            } else {
+                export(image: croppedDark,
+                       name: name.replace,
+                       isDark: true,
+                       isDisabled: false,
+                       type: name.type)
+            }
+            
+        } else {
+            print("Invalid Crop (Dark)")
+            return
+        }
+        
+        if let croppedDarkDisabled = crop(cgImage: imageDarkDisabled, frame: frame, padding: 1) {
+            if scaled {
+                exportScaled(image: croppedDarkDisabled,
+                             name: name.replace,
+                             isDark: true,
+                             isDisabled: true,
+                             type: name.type,
+                             scaleNames: scaleNames,
+                             scaleDivisions: scaleDivisions)
+            } else {
+                export(image: croppedDarkDisabled,
+                       name: name.replace,
+                       isDark: true,
+                       isDisabled: true,
+                       type: name.type)
+            }
+            
+        } else {
+            print("Invalid Crop (Dark Disabled)")
+            return
+        }
+    }
+    
     static func generateAll(names: [ImportName], scaled: Bool) {
         
         let scaleNames = ["1_0", "2_0", "3_0"]

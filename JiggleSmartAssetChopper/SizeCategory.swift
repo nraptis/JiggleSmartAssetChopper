@@ -88,6 +88,15 @@ enum SizeCategory: CaseIterable {
             case .phone_ls_2l:
                 return 84 + 12
             }
+        case .accessory:
+            switch self {
+            case .pad_0l, .pad_1l, .pad_2l:
+                return 210
+            case .phone_po_0l, .phone_po_1l, .phone_po_2l:
+                return 168
+            case .phone_ls_0l, .phone_ls_1l, .phone_ls_2l:
+                return 144
+            }
         }
     }
 }

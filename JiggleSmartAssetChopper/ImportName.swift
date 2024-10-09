@@ -10,6 +10,7 @@ import Foundation
 enum ImportType {
     case loose
     case framed
+    case accessory
 }
 
 struct ImportName {
