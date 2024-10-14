@@ -11,7 +11,7 @@ struct Tool {
     
     static func getFrame(name: ImportName) -> Bitmap.BitmapFrame? {
         
-        let importNameLight = name.partial + "_light.png"
+        let importNameLight = name.inputPrefix + "_" + name.name + "_light.png"
         
         let filePathLight = FileUtils.shared.getMainBundleFilePath(fileName: importNameLight)
         
@@ -39,11 +39,11 @@ struct Tool {
         let scaleNames = ["1_0", "2_0", "3_0"]
         let scaleDivisions = [6, 3, 2]
         
-        let importNameLight = name.partial + "_light.png"
-        let importNameLightDisabled = name.partial + "_light_disabled.png"
+        let importNameLight = name.inputPrefix + "_" + name.name + "_light.png"
+        let importNameLightDisabled = name.inputPrefix + "_" + name.name + "_light_disabled.png"
         
-        let importNameDark = name.partial + "_dark.png"
-        let importNameDarkDisabled = name.partial + "_dark_disabled.png"
+        let importNameDark = name.inputPrefix + "_" + name.name + "_dark.png"
+        let importNameDarkDisabled = name.inputPrefix + "_" + name.name + "_dark_disabled.png"
         
         
         let filePathLight = FileUtils.shared.getMainBundleFilePath(fileName: importNameLight)
@@ -85,7 +85,7 @@ struct Tool {
             
             if scaled {
                 exportScaled(image: croppedLight,
-                             name: name.replace,
+                             name: name.outputPrefix + "_" + name.name,
                              isDark: false,
                              isDisabled: false,
                              type: name.type,
@@ -93,7 +93,7 @@ struct Tool {
                              scaleDivisions: scaleDivisions)
             } else {
                 export(image: croppedLight,
-                       name: name.replace,
+                       name: name.outputPrefix + "_" + name.name,
                        isDark: false,
                        isDisabled: false,
                        type: name.type)
@@ -107,7 +107,7 @@ struct Tool {
             
             if scaled {
                 exportScaled(image: croppedLightDisabled,
-                             name: name.replace,
+                             name: name.outputPrefix + "_" + name.name,
                              isDark: false,
                              isDisabled: true,
                              type: name.type,
@@ -115,7 +115,7 @@ struct Tool {
                              scaleDivisions: scaleDivisions)
             } else {
                 export(image: croppedLightDisabled,
-                       name: name.replace,
+                       name: name.outputPrefix + "_" + name.name,
                        isDark: false,
                        isDisabled: true,
                        type: name.type)
@@ -128,7 +128,7 @@ struct Tool {
         if let croppedDark = crop(cgImage: imageDark, frame: frame, padding: 1) {
             if scaled {
                 exportScaled(image: croppedDark,
-                             name: name.replace,
+                             name: name.outputPrefix + "_" + name.name,
                              isDark: true,
                              isDisabled: false,
                              type: name.type,
@@ -136,7 +136,7 @@ struct Tool {
                              scaleDivisions: scaleDivisions)
             } else {
                 export(image: croppedDark,
-                       name: name.replace,
+                       name: name.outputPrefix + "_" + name.name,
                        isDark: true,
                        isDisabled: false,
                        type: name.type)
@@ -150,7 +150,7 @@ struct Tool {
         if let croppedDarkDisabled = crop(cgImage: imageDarkDisabled, frame: frame, padding: 1) {
             if scaled {
                 exportScaled(image: croppedDarkDisabled,
-                             name: name.replace,
+                             name: name.outputPrefix + "_" + name.name,
                              isDark: true,
                              isDisabled: true,
                              type: name.type,
@@ -158,7 +158,7 @@ struct Tool {
                              scaleDivisions: scaleDivisions)
             } else {
                 export(image: croppedDarkDisabled,
-                       name: name.replace,
+                       name: name.outputPrefix + "_" + name.name,
                        isDark: true,
                        isDisabled: true,
                        type: name.type)
@@ -177,11 +177,11 @@ struct Tool {
         
         for name in names {
             
-            let importNameLight = name.partial + "_light.png"
-            let importNameLightDisabled = name.partial + "_light_disabled.png"
+            let importNameLight = name.inputPrefix + "_" + name.name + "_light.png"
+            let importNameLightDisabled = name.inputPrefix + "_" + name.name + "_light_disabled.png"
             
-            let importNameDark = name.partial + "_dark.png"
-            let importNameDarkDisabled = name.partial + "_dark_disabled.png"
+            let importNameDark = name.inputPrefix + "_" + name.name + "_dark.png"
+            let importNameDarkDisabled = name.inputPrefix + "_" + name.name + "_dark_disabled.png"
             
             
             let filePathLight = FileUtils.shared.getMainBundleFilePath(fileName: importNameLight)
@@ -232,7 +232,7 @@ struct Tool {
                 
                 if scaled {
                     exportScaled(image: croppedLight,
-                                 name: name.replace,
+                                 name: name.outputPrefix + "_" + name.name,
                                  isDark: false,
                                  isDisabled: false,
                                  type: name.type,
@@ -240,7 +240,7 @@ struct Tool {
                                  scaleDivisions: scaleDivisions)
                 } else {
                     export(image: croppedLight,
-                           name: name.replace,
+                           name: name.outputPrefix + "_" + name.name,
                            isDark: false,
                            isDisabled: false,
                            type: name.type)
@@ -254,7 +254,7 @@ struct Tool {
                 
                 if scaled {
                     exportScaled(image: croppedLightDisabled,
-                                 name: name.replace,
+                                 name: name.outputPrefix + "_" + name.name,
                                  isDark: false,
                                  isDisabled: true,
                                  type: name.type,
@@ -262,7 +262,7 @@ struct Tool {
                                  scaleDivisions: scaleDivisions)
                 } else {
                     export(image: croppedLightDisabled,
-                           name: name.replace,
+                           name: name.outputPrefix + "_" + name.name,
                            isDark: false,
                            isDisabled: true,
                            type: name.type)
@@ -275,7 +275,7 @@ struct Tool {
             if let croppedDark = crop(cgImage: imageDark, frame: frameLight, padding: 1) {
                 if scaled {
                     exportScaled(image: croppedDark,
-                                 name: name.replace,
+                                 name: name.outputPrefix + "_" + name.name,
                                  isDark: true,
                                  isDisabled: false,
                                  type: name.type,
@@ -283,7 +283,7 @@ struct Tool {
                                  scaleDivisions: scaleDivisions)
                 } else {
                     export(image: croppedDark,
-                           name: name.replace,
+                           name: name.outputPrefix + "_" + name.name,
                            isDark: true,
                            isDisabled: false,
                            type: name.type)
@@ -297,7 +297,7 @@ struct Tool {
             if let croppedDarkDisabled = crop(cgImage: imageDarkDisabled, frame: frameLight, padding: 1) {
                 if scaled {
                     exportScaled(image: croppedDarkDisabled,
-                                 name: name.replace,
+                                 name: name.outputPrefix + "_" + name.name,
                                  isDark: true,
                                  isDisabled: true,
                                  type: name.type,
@@ -305,7 +305,7 @@ struct Tool {
                                  scaleDivisions: scaleDivisions)
                 } else {
                     export(image: croppedDarkDisabled,
-                           name: name.replace,
+                           name: name.outputPrefix + "_" + name.name,
                            isDark: true,
                            isDisabled: true,
                            type: name.type)
@@ -315,6 +315,11 @@ struct Tool {
                 print("Invalid Crop (Dark Disabled)")
                 return
             }
+        }
+        
+        for name in names {
+            let string = name.name
+            print("MeasureTool.framedConvertibleBuildAsset(prefix: \"framed\", name: \"\(string)\")")
         }
     }
     

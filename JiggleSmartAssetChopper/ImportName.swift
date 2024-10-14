@@ -14,7 +14,8 @@ enum ImportType {
 }
 
 struct ImportName {
-    let partial: String
-    let replace: String
+    let inputPrefix: String
+    let outputPrefix: String
+    let name: String
     let type: ImportType
 }

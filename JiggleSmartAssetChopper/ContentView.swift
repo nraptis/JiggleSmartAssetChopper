@@ -56,7 +56,25 @@ struct ContentView: View {
             
             var names = [ImportName]()
             
-            names.append(.init(partial: "framed_guides", replace: "framed_guides", type: .framed))
+            names.append(.init(inputPrefix: "mini", outputPrefix: "loose", name: "rotate_right_a", type: .loose))
+            names.append(.init(inputPrefix: "mini", outputPrefix: "loose", name: "rotate_right_b", type: .loose))
+            names.append(.init(inputPrefix: "mini", outputPrefix: "loose", name: "rotate_left_a", type: .loose))
+            names.append(.init(inputPrefix: "mini", outputPrefix: "loose", name: "rotate_left_b", type: .loose))
+            
+            //names.append(.init(inputPrefix: "mini", outputPrefix: "framed", name: "jiggle_center_b", type: .framed))
+            //names.append(.init(inputPrefix: "mini", outputPrefix: "framed", name: "jiggle_center_a", type: .framed))
+            
+            
+            //names.append(.init(partial: "shrunk_make_guide", replace: "framed_make_guide", type: .framed))
+            //names.append(.init(partial: "shrunk_draw_jiggle", replace: "framed_draw_jiggle", type: .framed))
+            //names.append(.init(partial: "shrunk_make_jiggle", replace: "framed_make_jiggle", type: .framed))
+            
+            //names.append(.init(partial: "mini_jiggle_a", replace: "framed_jiggle_a", type: .framed))
+            //names.append(.init(partial: "mini_jiggle_b", replace: "framed_jiggle_b", type: .framed))
+            
+            //names.append(.init(partial: "mini_points_a", replace: "framed_points_a", type: .framed))
+            //names.append(.init(partial: "mini_points_b", replace: "framed_points_b", type: .framed))
+            
             
             /*
             names.append(.init(partial: "mini_framed_menu_a", replace: "framed_menu_a", type: .framed))
