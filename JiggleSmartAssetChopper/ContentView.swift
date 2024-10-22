@@ -56,10 +56,15 @@ struct ContentView: View {
             
             var names = [ImportName]()
             
-            names.append(.init(inputPrefix: "mini", outputPrefix: "loose", name: "rotate_right_a", type: .loose))
-            names.append(.init(inputPrefix: "mini", outputPrefix: "loose", name: "rotate_right_b", type: .loose))
-            names.append(.init(inputPrefix: "mini", outputPrefix: "loose", name: "rotate_left_a", type: .loose))
-            names.append(.init(inputPrefix: "mini", outputPrefix: "loose", name: "rotate_left_b", type: .loose))
+            
+            names.append(.init(inputPrefix: "mini", outputPrefix: "framed", name: "dark_mode_a", type: .framed))
+            names.append(.init(inputPrefix: "mini", outputPrefix: "framed", name: "dark_mode_b", type: .framed))
+            
+            
+            
+            //names.append(.init(inputPrefix: "mini", outputPrefix: "framed", name: "guide_centers_b", type: .loose))
+            //names.append(.init(inputPrefix: "mini", outputPrefix: "framed", name: "guide_centers_c", type: .loose))
+            //names.append(.init(inputPrefix: "mini", outputPrefix: "framed", name: "guide_centers_d", type: .loose))
             
             //names.append(.init(inputPrefix: "mini", outputPrefix: "framed", name: "jiggle_center_b", type: .framed))
             //names.append(.init(inputPrefix: "mini", outputPrefix: "framed", name: "jiggle_center_a", type: .framed))
